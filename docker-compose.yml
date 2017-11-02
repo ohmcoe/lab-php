@@ -1,0 +1,43 @@
+version: '3.2'
+services:
+    mysql:
+        #private ip uncomment this line
+        image: x.coe.phuket.psu.ac.th:8443/sakarin.k/mysql
+        #public ip uncomment this line
+        #image: mysql
+        volumes:
+            - ./database:/var/lib/mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=123456789
+        restart: always
+        container_name: mysql
+    webserver:
+        #private ip uncomment this line
+        image: x.coe.phuket.psu.ac.th:8443/sakarin.k/nginx
+        #public ip uncomment this line
+        #image: ohmcoe/nginx
+        ports:
+            - 80:80
+        depends_on:
+            - php
+        links:
+            - php
+        volumes:
+            - ./webserver/conf.d:/etc/nginx/conf.d:ro
+            - ./webserver/www:/var/www
+        restart: always
+        container_name: webserver
+    php:
+        #private ip uncomment this line
+        image: x.coe.phuket.psu.ac.th:8443/sakarin.k/phalcon 
+        #public ip uncomment this line
+        #image: ohmcoe/phalcon 
+        depends_on:
+            - mysql
+        links:
+            - mysql
+        volumes:
+            - ./webserver/conf.d:/etc/nginx/conf.d:ro
+            - ./webserver/www:/var/www
+        restart: always
+        container_name: php
